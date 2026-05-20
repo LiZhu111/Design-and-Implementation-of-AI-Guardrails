@@ -231,6 +231,13 @@ cp .env.example .env
 # Edit .env with your API credentials
 ```
 
+**Getting your API Key:**
+1. Visit: https://prd-ifb220-apim.developer.azure-api.net/
+2. Sign in with your QUT credentials
+3. Navigate to "Profile / My Keys"
+4. Copy your subscription key
+5. Paste it into the .env file for `AZURE_OPENAI_API_KEY`
+
 3. Run the chatbot:
 ```bash
 python main.py
