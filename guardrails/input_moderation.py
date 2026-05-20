@@ -117,6 +117,22 @@ Respond ONLY in JSON format: {{"is_safe": true/false, "reason": "..."}}"""
         with open(config.LOG_FILE, "a", encoding="utf-8") as f:
             f.write(json.dumps(log_entry) + "\n")
 
+    def _check_injection_patterns(self, user_input: str) -> Tuple[bool, str]:
+        """Check for prompt injection patterns before keyword matching."""
+        injection_patterns = [
+            "forget your", "ignore your", "disregard",
+            "new instructions", "different rules", "override",
+            "system:", "you are now", "pretend to be",
+            "act as if", "DAN mode", "developer mode",
+            "answer this:", "answer:", "tell me:",
+            "forget all", "disregard all", "ignore all"
+        ]
+        input_lower = user_input.lower()
+        for pattern in injection_patterns:
+            if pattern in input_lower:
+                return False, f"Injection pattern detected: {pattern}"
+        return True, "No injection patterns"
+
     def moderate(self, user_input: str) -> Tuple[bool, str, str]:
         """
         Main moderation function with layered defense.
@@ -124,6 +140,11 @@ Respond ONLY in JSON format: {{"is_safe": true/false, "reason": "..."}}"""
         """
         if not user_input or not user_input.strip():
             return False, config.DENIAL_MESSAGE, "Empty Input"
+
+        inj_pass, inj_reason = self._check_injection_patterns(user_input)
+        if not inj_pass:
+            self._log_interception(user_input, "Injection Pattern", inj_reason)
+            return False, config.DENIAL_MESSAGE, "Injection Pattern"
 
         keyword_pass, keyword_reason = self._keyword_matching(user_input)
 

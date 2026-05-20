@@ -16,7 +16,8 @@ TOPIC_KEYWORDS = [
     "lawn", "tree", "shrub", "compost", "mulch", "prune",
     "insect", "bugs", "disease", "rose", "roses", "tomato",
     "leaf", "root", "stem", "seedling", "sprout", "watering",
-    "sunlight", "shade", "climate", "season", "winter", "summer"
+    "sunlight", "shade", "climate", "season", "winter", "summer",
+    "vinegar", "weed", "weeds", "kill", "control", "organic"
 ]
 
 TOPIC_SAMPLE_QUERIES = [
