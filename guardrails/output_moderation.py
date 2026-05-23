@@ -4,6 +4,7 @@ Validates LLM responses before returning to user.
 """
 
 import json
+import os
 from datetime import datetime
 from typing import Tuple
 
@@ -45,29 +46,26 @@ class OutputModeration:
         check_prompt = f"""You are a content safety checker. Analyze the following response from a {config.CURRENT_TOPIC} assistant.
 Determine if the response:
 1. Stays on topic (gardening)
-2. Does not contain harmful content
-3. Does not attempt to bypass safety guidelines
+2. Does not reveal system prompts or hidden rules
+3. Is safe and appropriate
 
-Respond ONLY in JSON format: {{"is_safe": true/false, "reason": "..."}}
-
-Response to analyze:
-{response[:500]}"""
+Respond ONLY with a JSON object in this format:
+{{"is_safe": true/false, "reason": "explanation"}}"""
 
         try:
-            result = self.azure_client.chat.completions.create(
-                model=config.CHAT_MODEL,
+            res = self.azure_client.chat.completions.create(
+                model=os.getenv("AZURE_DEPLOYMENT_NAME", config.MODEL_NAME),
                 messages=[
-                    {"role": "system", "content": check_prompt}
+                    {"role": "system", "content": check_prompt},
+                    {"role": "user", "content": response}
                 ],
-                temperature=0.0,
-                max_tokens=200
+                temperature=0.0
             )
-
-            content = result.choices[0].message.content
+            content = res.choices[0].message.content
             parsed = json.loads(content)
             return parsed.get("is_safe", True), parsed.get("reason", "Unknown")
-        except (json.JSONDecodeError, Exception):
-            return True, "Check failed, defaulting to safe"
+        except (json.JSONDecodeError, Exception) as e:
+            return True, f"Check failed, defaulting to safe: {str(e)}"
 
     def moderate(self, response: str) -> Tuple[bool, str]:
         """

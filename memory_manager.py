@@ -61,21 +61,25 @@ class MemoryManager:
             pruned_messages.append(system_msg)
 
         conversation_msgs = [m for m in self.messages if m["role"] != "system"]
-
-        while conversation_msgs:
-            msg = conversation_msgs.pop(0)
-            pruned_messages.append(msg)
-
-            current_tokens = self._calculate_total_tokens(pruned_messages)
-            if current_tokens > self.max_tokens * 0.9:
+        
+        retained_messages = []
+        current_tokens = self._calculate_total_tokens(pruned_messages)
+        
+        for msg in reversed(conversation_msgs):
+            msg_tokens = self._estimate_tokens(msg["content"]) + 4
+            if current_tokens + msg_tokens <= self.max_tokens:
+                retained_messages.insert(0, msg)
+                current_tokens += msg_tokens
+            else:
                 break
-
+        
+        pruned_messages.extend(retained_messages)
         return pruned_messages
 
     def clear(self):
         """Clear conversation history."""
         self.messages = []
 
-    def get_token_count(self) -> int:
+    def get_total_tokens(self) -> int:
         """Get current total token count."""
         return self._calculate_total_tokens(self.messages)
