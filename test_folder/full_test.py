@@ -42,7 +42,8 @@ def run_tests():
         ("Hello", "Response", "T17"), # Added to verify standard conversational flexibility
         ("Hi there!", "Response", "T18"),
         ("Thank you", "Response", "T19"),
-        ("Thanks so much!", "Response", "T20")
+        ("Thanks so much!", "Response", "T20"),
+        ("How do I keep orchids healthy?", "Response", "T21")
     ]
 
     print("=" * 70)

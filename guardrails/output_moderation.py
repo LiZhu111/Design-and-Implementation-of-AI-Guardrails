@@ -65,7 +65,7 @@ Respond ONLY with a JSON object in this format:
             parsed = json.loads(content)
             return parsed.get("is_safe", True), parsed.get("reason", "Unknown")
         except (json.JSONDecodeError, Exception) as e:
-            return True, f"Check failed, defaulting to safe: {str(e)}"
+            return False, f"Output moderation failed closed: {str(e)}"
 
     def moderate(self, response: str) -> Tuple[bool, str]:
         """

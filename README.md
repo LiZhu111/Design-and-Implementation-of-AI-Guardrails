@@ -279,6 +279,16 @@ This change improved natural multi-turn interaction while preserving the layered
 
 ---
 
+### 3.5 Semantic Rescue Reflection: Reducing False Refusals
+
+The moderation pipeline was refined so that keyword misses no longer end the conversation immediately. Instead, potentially topical inputs now continue through semantic similarity and LLM classification checks. This improves recall for legitimate gardening questions that do not use obvious trigger words, while still preserving the adversarial gatekeeping layers above it.
+
+At the same time, output moderation now fails closed if the safety checker itself fails. This is the stronger operational choice because it prevents unchecked model output from reaching the user when the verification layer is unavailable.
+
+This refinement improved both user experience and safety posture without changing the topic-bounded design of the chatbot.
+
+---
+
 ## 4. Setup & Verification Instructions
 
 ### 4.1 Prerequisites & Installation

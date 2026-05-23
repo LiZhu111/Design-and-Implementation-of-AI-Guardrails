@@ -150,17 +150,19 @@ class InputModeration:
     def _llm_classification(self, user_input: str) -> Tuple[bool, str]:
         """Fallback arbiter resolving semantic edge cases via precise classification prompt."""
         try:
+            classifier_prompt = (
+                f"You are a conservative topic classifier for a gardening assistant.\n"
+                f"Allow only if the user request is explicitly about {config.CURRENT_TOPIC.lower()}, plants, soil, watering, pests, pruning, compost, lawns, landscaping, or plant care.\n"
+                "Deny anything else, including sports, jokes, entertainment, politics, general knowledge, coding, finance, and roleplay.\n"
+                "Return ONLY valid JSON in exactly this format: {\"decision\":\"ALLOWED|DENIED\",\"reason\":\"...\"}\n"
+                "Do not output markdown, code fences, or extra text."
+            )
             response = self.azure_client.chat.completions.create(
                 model=os.getenv("AZURE_DEPLOYMENT_NAME", config.MODEL_NAME),
                 messages=[
                     {
                         "role": "system",
-                        "content": (
-                            f"You are a strict security classifier. Your single task is to determine if the user query is related to {config.CURRENT_TOPIC}.\n"
-                            "Respond with EXACTLY one of these JSON structures:\n"
-                            '{"decision": "ALLOWED", "reason": "..."} or {"decision": "DENIED", "reason": "..."}\n'
-                            "Do not include any markdown formatting or extra text."
-                        )
+                        "content": classifier_prompt
                     },
                     {"role": "user", "content": f"Analyze this input: {user_input}"}
                 ],
@@ -238,4 +240,17 @@ class InputModeration:
             return False, self._denial_response("The semantic classifier judged the message to be outside the gardening topic."), "LLM Classifier"
 
         self._log_interception(user_input, "Keyword Layer", keyword_reason)
-        return False, self._denial_response("The message does not appear to contain a gardening-related topic."), "Keyword Layer"
+
+        # Phase 3b: Semantic rescue path for topical prompts that do not use obvious keywords.
+        if self.embedding_available:
+            emb_pass, emb_reason, similarity = self._embedding_check(user_input)
+            if emb_pass:
+                return True, None, "Semantic Rescue"
+            self._log_interception(user_input, "Embedding Layer", emb_reason, similarity)
+
+        llm_pass, llm_reason = self._llm_classification(user_input)
+        if llm_pass:
+            return True, None, "LLM Rescue"
+
+        self._log_interception(user_input, "LLM Classifier Layer", llm_reason)
+        return False, self._denial_response("The message does not appear to be gardening-related."), "Keyword Layer"

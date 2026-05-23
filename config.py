@@ -26,10 +26,15 @@ TOPIC_SAMPLE_QUERIES = [
     "How to make compost at home?",
     "What are the best herbs to grow in pots?",
     "How to prune rose bushes properly?",
-    "How to get rid of weeds naturally?"
+    "How to get rid of weeds naturally?",
+    "How do I care for orchids indoors?",
+    "What is the best way to keep houseplants healthy?",
+    "How should I look after seedlings after germination?",
+    "How do I repot indoor plants without damaging roots?",
+    "What lighting do potted plants need inside?"
 ]
 
-EMBEDDING_THRESHOLD = 0.72
+EMBEDDING_THRESHOLD = 0.90
 MAX_TOKENS = 4000
 
 # Bind explicitly to environment variables required by QUT API Gateway
