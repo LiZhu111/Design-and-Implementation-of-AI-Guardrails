@@ -212,7 +212,7 @@ full_test.py
 
 #### Methodology
 
-The test matrix maps out 18 distinct test blocks across four operational dimensions:
+The verification suite currently covers 21 prompt cases plus one multi-turn conversation block across four operational dimensions:
 
 - Topical Queries
 - Off-Topic Queries
@@ -236,14 +236,14 @@ and compares it against a deterministic expected-result matrix.
 
 ```text
 [ Code Adjustment ]
-          │
-          ▼
+      |
+      v
 [ Execution of full_test.py ]
-          │
-          ▼
+      |
+      v
 [ Evaluation of Pass/Fail Matrix ]
-          │
-          ▼
+      |
+      v
 [ Identify Anomalies & Refine ]
 ```
 
@@ -388,3 +388,5 @@ This project demonstrates that robust AI systems cannot rely solely on model int
 5. Human architectural oversight
 
 The final system evolved from a simple keyword-based prototype into a resilient, enterprise-style guardrail framework capable of maintaining topical alignment while resisting prompt injection and context-management failures.
+
+
