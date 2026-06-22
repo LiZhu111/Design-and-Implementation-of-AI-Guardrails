@@ -2,6 +2,65 @@
 
 A High Distinction-level chatbot system implementing a multi-layer defense architecture for topic-restricted conversations. The system ensures rigorous alignment with predefined domain boundaries while maintaining human-like dialogue fluidness through advanced input/output moderation pipelines.
 
+## Web Interface
+
+The project now includes a Streamlit web interface in `app.py`. It provides:
+
+- A browser-based chat interface
+- Independent conversation state for each browser session
+- A conversation reset button
+- User-friendly connection and service error messages
+- The same input guardrails, output moderation, and memory management used by
+  the terminal application
+
+### Run the Web Application
+
+Open PowerShell in the project directory:
+
+```powershell
+cd ".\IFB220assignment2_LIZHU_N12316628"
+```
+
+Install all dependencies:
+
+```powershell
+python -m pip install -r requirements.txt
+```
+
+Copy `.env.example` to `.env` and configure the required Azure OpenAI values:
+
+```text
+AZURE_OPENAI_API_KEY=your_api_key_here
+AZURE_OPENAI_ENDPOINT=your_azure_endpoint
+AZURE_DEPLOYMENT_NAME=your_chat_deployment
+AZURE_EMBEDDING_NAME=your_embedding_deployment
+AZURE_OPENAI_API_VERSION=your_api_version
+USE_EMBEDDING_CHECK=true
+```
+
+Start the Streamlit application:
+
+```powershell
+python -m streamlit run app.py
+```
+
+The application normally opens automatically at:
+
+```text
+http://localhost:8501
+```
+
+Using `python -m streamlit` is recommended on Windows. It also works when the
+standalone `streamlit` command is not available in the system `PATH`.
+
+### Terminal Interface
+
+The original command-line interface remains available:
+
+```powershell
+python main.py
+```
+
 ---
 
 ## 1. Architecture Overview
